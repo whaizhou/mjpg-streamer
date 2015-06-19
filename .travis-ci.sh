@@ -24,7 +24,7 @@ function setup_arm_chroot {
     # Create chrooted environment
     sudo mkdir -p ${CHROOT_DIR}
     wget  ${MIRROR}
-    sudo tar xf debian-8.1-console-armhf-2015-06-11.tar.xz 
+    sudo tar xf debian-8.1-console-armhf-2015-06-11.tar.xz
     sudo tar xf debian-8.1-console-armhf-2015-06-11/armhf-rootfs-debian-jessie.tar -C ${CHROOT_DIR}
     # Create file with environment variables which will be used inside chrooted
     # environment
@@ -45,8 +45,8 @@ function setup_arm_chroot {
     sudo mount -o bind /proc ${CHROOT_DIR}/proc
 
     # workaround where chroot does not resolve dns with standard servers
-    echo 'nameserver 208.67.222.222' > ${CHROOT_DIR}/etc/resolv.conf
-    echo 'nameserver 208.67.220.220' >> ${CHROOT_DIR}/etc/resolv.conf
+    echo 'nameserver 208.67.222.222' |  sudo tee ${CHROOT_DIR}/etc/resolv.conf
+    echo 'nameserver 208.67.220.220' | sudo tee --append ${CHROOT_DIR}/etc/resolv.conf
 
     # Indicate chroot environment has been set up
     sudo touch ${CHROOT_DIR}/.chroot_is_done
