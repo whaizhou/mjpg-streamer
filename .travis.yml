@@ -3,12 +3,13 @@ install: gem install fpm
 cache: false
 
 env:
-  - ARCH=arm
   global:
   - VERSION_NUMBER="`cat package.json | grep version | grep -o '[0-9]*\.[0-9]*\.[0-9]\+'`"
   - BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
   - REAL_GIT_BRANCH="`git for-each-ref --format='%(objectname) %(refname:short)' refs/heads
     | grep $TRAVIS_COMMIT | awk '{print $2}'`"
+  - ARCH=arm
+
 
 script:
 - echo version_number $VERSION_NUMBER
