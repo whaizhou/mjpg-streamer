@@ -24,7 +24,7 @@ function setup_arm_chroot {
     # Create chrooted environment
     sudo mkdir -p ${CHROOT_DIR}
     wget  ${MIRROR}
-    sudo tar xf debian-wheezy-7.5-rootfs-3.14.4.1-bone-armhf.com.tar.xz -C ${CHROOT_DIR}
+    sudo tar xf bone-debian-8.0-console-armhf-2015-05-08-2gb.img.xz -C ${CHROOT_DIR}
 
     # Create file with environment variables which will be used inside chrooted
     # environment
