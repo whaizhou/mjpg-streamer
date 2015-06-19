@@ -50,7 +50,7 @@ function setup_arm_chroot {
 
     # Indicate chroot environment has been set up
     sudo touch ${CHROOT_DIR}/.chroot_is_done
-    ls ${CHROOT_DIR}
+    ls ${CHROOT_DIR}/home/travis/build/BrianAdams/mjpg-streamer/
     # Call ourselves again which will cause tests to run
     sudo chroot ${CHROOT_DIR} bash -c "./.travis-ci.sh"
 }
