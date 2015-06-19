@@ -50,10 +50,11 @@ function setup_arm_chroot {
 
     # Indicate chroot environment has been set up
     sudo touch ${CHROOT_DIR}/.chroot_is_done
-    ls -la ${CHROOT_DIR}/${TRAVIS_BUILD_DIR}
+
     sudo chmod 777 ${CHROOT_DIR}/${TRAVIS_BUILD_DIR}
+    ls -la ${CHROOT_DIR}/${TRAVIS_BUILD_DIR}
     # Call ourselves again which will cause tests to run
-    sudo chroot ${CHROOT_DIR} bash -c "cd ${TRAVIS_BUILD_DIR} && ./.travis-ci.sh"
+    sudo chroot ${CHROOT_DIR} bash -c "cd ${TRAVIS_BUILD_DIR} && bash ./.travis-ci.sh"
 }
 
 if [ -e "/.chroot_is_done" ]; then
