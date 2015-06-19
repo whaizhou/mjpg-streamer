@@ -3,7 +3,7 @@
 # Based on a test script from avsm/ocaml repo https://github.com/avsm/ocaml
 
 CHROOT_DIR=/tmp/arm-chroot
-MIRROR=https://rcn-ee.com/rootfs/2015-05-08/microsd/bone-debian-8.0-console-armhf-2015-05-08-2gb.img.xz
+MIRROR=https://rcn-ee.com/rootfs/2015-06-11/debian-8.1-console-armhf-2015-06-11.tar.xz
 VERSION=jessie
 CHROOT_ARCH=armhf
 
@@ -24,8 +24,7 @@ function setup_arm_chroot {
     # Create chrooted environment
     sudo mkdir -p ${CHROOT_DIR}
     wget  ${MIRROR}
-    sudo tar xf bone-debian-8.0-console-armhf-2015-05-08-2gb.img.xz -C ${CHROOT_DIR}
-
+    sudo tar xf debian-8.1-console-armhf-2015-06-11.tar.xz -C ${CHROOT_DIR}
     # Create file with environment variables which will be used inside chrooted
     # environment
     echo "export ARCH=${ARCH}" > envvars.sh
