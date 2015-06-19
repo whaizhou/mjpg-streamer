@@ -24,7 +24,8 @@ function setup_arm_chroot {
     # Create chrooted environment
     sudo mkdir -p ${CHROOT_DIR}
     wget  ${MIRROR}
-    sudo tar xf debian-8.1-console-armhf-2015-06-11.tar.xz -C ${CHROOT_DIR}
+    sudo tar xf debian-8.1-console-armhf-2015-06-11.tar.xz 
+    sudo tar xf debian-8.1-console-armhf-2015-06-11/armhf-rootfs-debian-jessie.tar -C ${CHROOT_DIR}
     # Create file with environment variables which will be used inside chrooted
     # environment
     echo "export ARCH=${ARCH}" > envvars.sh
