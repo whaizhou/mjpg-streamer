@@ -1,0 +1,24 @@
+language: erlang
+install: gem install fpm
+cache: false
+
+env:
+  - ARCH=arm
+  global:
+  - VERSION_NUMBER="`cat package.json | grep version | grep -o '[0-9]*\.[0-9]*\.[0-9]\+'`"
+  - BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
+  - REAL_GIT_BRANCH="`git for-each-ref --format='%(objectname) %(refname:short)' refs/heads
+    | grep $TRAVIS_COMMIT | awk '{print $2}'`"
+
+script:
+- echo version_number $VERSION_NUMBER
+- echo real_get_branch $REAL_GIT_BRANCH
+- "bash -ex .travis-ci.sh"
+- cd /tmp/mjpg-streamer_install
+- 'fpm -f -m info@openrov.com -s dir -t deb -a armhf -n openrov-mjpeg-streamer
+  -v $VERSION_NUMBER~$BUILD_NUMBER.`git rev-parse --short HEAD` --description ''OpenROV
+  mjpeg-streamer'' .=/opt/mjpeg-streamer '
+- mkdir build
+- DEBFILE="`ls *.deb`"
+- cp *.deb build/openrov-mjpeg-streamer_latest-${REAL_GIT_BRANCH}_armhf.deb
+- mv *.deb build/
