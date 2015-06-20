@@ -1,7 +1,6 @@
 language: erlang
 install: gem install fpm
 cache: false
-
 env:
   global:
   - VERSION_NUMBER="`cat package.json | grep version | grep -o '[0-9]*\.[0-9]*\.[0-9]\+'`"
@@ -9,16 +8,28 @@ env:
   - REAL_GIT_BRANCH="`git for-each-ref --format='%(objectname) %(refname:short)' refs/heads
     | grep $TRAVIS_COMMIT | awk '{print $2}'`"
   - ARCH=arm
-
-
 script:
 - echo version_number $VERSION_NUMBER
 - echo real_get_branch $REAL_GIT_BRANCH
-- export FINALVERSION=$VERSION_NUMBER~$BUILD_NUMBER.`git rev-parse --short HEAD`
-- "bash -ex .travis-ci.sh"
-- 'fpm -f -m info@openrov.com -s dir -t deb -a armhf -n openrov-mjpeg-streamer
-  -v $FINALVERSION --description ''OpenROV mjpeg-streamer'' /tmp/arm-chroot/tmp/mjpg-streamer_install=/opt/mjpeg-streamer '
+- export FINALVERSION=2.0.1-9~${BUILD_NUMBER}.`git rev-parse --short HEAD`
+- bash -ex .travis-ci.sh
+- 'fpm -f -m info@openrov.com -s dir -t deb -a armhf -n openrov-mjpeg-streamer -v
+  $FINALVERSION --description ''OpenROV mjpeg-streamer'' /tmp/arm-chroot/tmp/mjpg-streamer_install=/opt/mjpeg-streamer '
 - mkdir build
 - DEBFILE="`ls *.deb`"
 - cp *.deb build/openrov-mjpeg-streamer_latest-${REAL_GIT_BRANCH}_armhf.deb
 - mv *.deb build/
+deploy:
+  provider: s3
+  access_key_id: AKIAIUN4NNHBKIOZE2JA
+  secret_access_key:
+    secure: foKE/gZ5SuBy3CV9IiH79gtB5rsJtKWi026p7aAVo3s0e/yYTR6RkmzFkjvW5Vcd8WPg0OHr0S9yLASauwRxJ3h7o5r0PEUDr4FP6uyJ+tI2gUzOSe/Okr6g8mvvAmTzJWZwBKbUa1rWEECVnV9yH4LnbPXw/xrxCgIqFf8nguo=
+  bucket: openrov-software-nightlies
+  skip_cleanup: true
+  region: us-west-2
+  endpoint: bucket-name.s3-website-us-west-2.amazonaws.com
+  local-dir: build
+  upload-dir: jessie/mjpeg-streamer
+  acl: public_read
+  on:
+    repo: BrianAdams/mjpg-streamer
