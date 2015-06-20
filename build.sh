@@ -30,4 +30,5 @@ mkdir -p /tmp/mjpg-streamer_install/usr/local/
 mkdir -p /tmp/mjpg-streamer_install/usr/local/bin
 mkdir -p /tmp/mjpg-streamer_install/usr/local/lib
 
+cd mjpg-streamer
 make install DESTDIR=/tmp/mjpg-streamer_install/usr/local
