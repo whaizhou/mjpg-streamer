@@ -14,7 +14,7 @@ set -e
 
 #echo '--------- NEW -----------'
 #cat /etc/apt/sources.list
-
+apt-get update -qq
 apt-get install -y \
 g++ \
 cmake \
