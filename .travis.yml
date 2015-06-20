@@ -16,10 +16,8 @@ script:
 - echo real_get_branch $REAL_GIT_BRANCH
 - export FINALVERSION=$VERSION_NUMBER~$BUILD_NUMBER.`git rev-parse --short HEAD`
 - "bash -ex .travis-ci.sh"
-- cd /tmp/arm-chroot/tmp/mjpg-streamer_install
 - 'fpm -f -m info@openrov.com -s dir -t deb -a armhf -n openrov-mjpeg-streamer
-  -v $FINALVERSION --description ''OpenROV
-  mjpeg-streamer'' .=/opt/mjpeg-streamer '
+  -v $FINALVERSION --description ''OpenROV mjpeg-streamer'' /tmp/arm-chroot/tmp/mjpg-streamer_install=/opt/mjpeg-streamer '
 - mkdir build
 - DEBFILE="`ls *.deb`"
 - cp *.deb build/openrov-mjpeg-streamer_latest-${REAL_GIT_BRANCH}_armhf.deb
