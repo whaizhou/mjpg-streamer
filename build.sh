@@ -20,7 +20,7 @@ g++ \
 cmake \
 build-essential \
 imagemagick \
-pck-config \
+pkg-config \
 libv4l-dev \
 v4l-utils \
 v4l2ucp \
