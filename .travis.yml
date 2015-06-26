@@ -14,7 +14,7 @@ script:
 - export FINALVERSION=2.0.1-9~${BUILD_NUMBER}.`git rev-parse --short HEAD`
 - bash -ex .travis-ci.sh
 - 'fpm -f -m info@openrov.com -s dir -t deb -a armhf -n openrov-mjpeg-streamer -v
-  $FINALVERSION --description ''OpenROV mjpeg-streamer'' -C /tmp/arm-chroot/tmp/mjpg-streamer_install/usr . '
+  $FINALVERSION --description ''OpenROV mjpeg-streamer'' -C /tmp/arm-chroot/tmp/mjpg-streamer_install . '
 - mkdir build
 - DEBFILE="`ls *.deb`"
 - cp *.deb build/openrov-mjpeg-streamer_latest-${REAL_GIT_BRANCH}_armhf.deb
