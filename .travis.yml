@@ -13,7 +13,7 @@ script:
 - echo real_get_branch $REAL_GIT_BRANCH
 - export FINALVERSION=2.0.1-9~${BUILD_NUMBER}.`git rev-parse --short HEAD`
 - bash -ex .travis-ci.sh
-- 'fpm -f -m info@openrov.com -s dir -t deb -a armhf -n openrov-mjpeg-streamer -d 'libjpeg62' -v
+- 'fpm -f -m info@openrov.com -s dir -t deb -a armhf -n openrov-mjpeg-streamer -d ''libjpeg62'' -v
   $FINALVERSION --description ''OpenROV mjpeg-streamer'' -C /tmp/arm-chroot/tmp/mjpg-streamer_install . '
 - mkdir build
 - DEBFILE="`ls *.deb`"
