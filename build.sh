@@ -26,10 +26,10 @@ v4l-utils \
 v4l2ucp \
 libjpeg62-turbo-dev
 
-mkdir -p /tmp/mjpg-streamer_install/usr/local/
-mkdir -p /tmp/mjpg-streamer_install/usr/local/bin
-mkdir -p /tmp/mjpg-streamer_install/usr/local/lib
+mkdir -p tmp/mjpg-streamer_install/usr/local/
+mkdir -p tmp/mjpg-streamer_install/usr/local/bin
+mkdir -p tmp/mjpg-streamer_install/usr/local/lib
 
 cd mjpg-streamer
 patch -p 0< patches\20150920_KernelFixBreaksUVCvideo.patch
-make install DESTDIR=/tmp/mjpg-streamer_install/usr/local
+make install DESTDIR=../tmp/mjpg-streamer_install/usr/local
