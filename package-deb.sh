@@ -4,7 +4,7 @@ set -ex
 gem install fpm
 export DIR=${PWD#}
 export PACKAGE="openrov-mjpeg-streamer"
-export PACKAGE_VERSION=2.0.1-9~${BUILD_NUMBER}.`git rev-parse --short HEAD`
+export PACKAGE_VERSION=2.0.1-10~${BUILD_NUMBER}.`git rev-parse --short HEAD`
 
 ARCH=`uname -m`
 if [ ${ARCH} = "armv7l" ]
