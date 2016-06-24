@@ -49,7 +49,9 @@
 static pthread_t worker;
 static globals *pglobal;
 static int fd, delay, max_frame_size;
-static char *url = "ipc:///tmp/mjpg-streamer.ipc";
+static char *registerUrl = "ipc:///tmp/mjpg-streamer-register.ipc";
+static char *cameraUrl = "ipc:///tmp/mjpg-streamer-%s.ipc";
+char *name = "video0";
 static unsigned char *frame = NULL;
 static int input_number = 0;
 
@@ -64,7 +66,7 @@ void help(void)
             " Help for output plugin..: "OUTPUT_PLUGIN_NAME"\n" \
             " ---------------------------------------------------------------\n" \
             " The following parameters can be passed to this plugin:\n\n" \
-            " [-u | --url ]..........: URL for ZeroMQ\n" \
+            " [-n | --name ]..........: Camera name for ZeroMQ queues\n" \
             " ---------------------------------------------------------------\n");
 }
 
@@ -91,13 +93,37 @@ void worker_cleanup(void *arg)
     close(fd);
 }
 
+int register_camera(char* url) 
+{
+    DBG("Registering");
+    
+    void *context = zmq_ctx_new ();
+    void *registrar = zmq_socket (context, ZMQ_REQ);
+    
+    zmq_connect (registrar,  registerUrl);
+
+    char *data = "{ \"type\": \"camera_registration\", \"name\": \"%s\", \"url\": \"%s\" "" }";
+    char payload[(strlen(data) -4) + strlen(name) + strlen(url)];
+
+    sprintf(payload, data, name, url);
+    int payloadSize = strlen(payload);
+    
+    zmq_send (registrar, payload, payloadSize, 0);       
+
+    zmq_close (registrar);
+    zmq_ctx_destroy (context);
+
+
+    return 0;
+}
+
 /******************************************************************************
 Description.: this is the main worker thread
               it loops forever, grabs a fresh frame and stores it to file
 Input Value.:
 Return Value:
 ******************************************************************************/
-void *worker_thread(void *arg)
+void *worker_thread(void *args)
 {
     int ok = 1, frame_size = 0;
     unsigned char *tmp_framebuffer = NULL;
@@ -105,14 +131,21 @@ void *worker_thread(void *arg)
     /* set cleanup handler to cleanup allocated ressources */
     pthread_cleanup_push(worker_cleanup, NULL);
 
+    char url[(strlen(cameraUrl) - 2) + strlen(name)];
+    sprintf(url, cameraUrl, name);
+    DBG("Camera url: %s", url);
+
+    register_camera(url);
+
+
     // open zmq que
     void *context = zmq_ctx_new ();
     void *publisher = zmq_socket (context, ZMQ_PUB);
-    // zmq_connect (publisher, "ipc:///tmp/mjpg-streamer.ipc");    
-    zmq_connect (publisher, "tcp://localhost:5555");    
+
+    zmq_bind (publisher, url);    
 
     while(ok >= 0 && !pglobal->stop) {
-        DBG("waiting for fresh frame\n");
+        //DBG("waiting for fresh frame\n");
         pthread_mutex_lock(&pglobal->in[input_number].db);
         pthread_cond_wait(&pglobal->in[input_number].db_update, &pglobal->in[input_number].db);
 
@@ -141,11 +174,7 @@ void *worker_thread(void *arg)
 
         DBG("sending frame");
 
-        zmq_msg_t payload;
-        zmq_msg_init_size (&payload, frame_size);
-        memcpy( zmq_msg_data (&payload), (void*)frame, frame_size );
-
-        zmq_send (&publisher, &payload, frame_size, 0);        
+        zmq_send (publisher, (void*)frame, frame_size, 0);        
 
     }
 
@@ -158,6 +187,8 @@ void *worker_thread(void *arg)
    
     return NULL;
 }
+
+
 
 /*** plugin interface functions ***/
 /******************************************************************************
@@ -185,8 +216,8 @@ int output_init(output_parameter *param)
             {"h", no_argument, 0, 0
             },
             {"help", no_argument, 0, 0},
-            {"u", required_argument, 0, 0},
-            {"url", required_argument, 0, 0},
+            {"n", required_argument, 0, 0},
+            {"name", required_argument, 0, 0},
             {0, 0, 0, 0}
         };
 
@@ -210,14 +241,14 @@ int output_init(output_parameter *param)
             return 1;
             break;
 
-            /* u, url */
+            /* n, name */
         case 2:
         case 3:
             DBG("case 2,3\n");
-            url = malloc(strlen(optarg) + 1);
-            strcpy(url, optarg);
-            if(url[strlen(url)-1] == '/')
-                url[strlen(url)-1] = '\0';
+            name = malloc(strlen(optarg) + 1);
+            strcpy(name, optarg);
+            if(name[strlen(name)-1] == '/')
+                name[strlen(name)-1] = '\0';
             break;
         }
     }
@@ -228,7 +259,7 @@ int output_init(output_parameter *param)
         return 1;
     }
 
-    OPRINT("ZeroMQ url.....: %s\n", url);
+    OPRINT("Camera name.....: %s\n", name);
     OPRINT("input plugin.....: %d: %s\n", input_number, pglobal->in[input_number].plugin);
     return 0;
 }
