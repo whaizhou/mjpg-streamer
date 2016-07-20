@@ -36,6 +36,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <syslog.h>
+#include <stdbool.h>
 
 #include <zmq.h>
 
@@ -52,6 +53,7 @@ static int fd, delay, max_frame_size;
 static char *registerUrl = "ipc:///tmp/mjpg-streamer-register.ipc";
 static char *cameraUrl = "ipc:///tmp/mjpg-streamer-%s.ipc";
 char *name = "video0";
+bool encode = false;
 static unsigned char *frame = NULL;
 static int input_number = 0;
 
@@ -67,6 +69,7 @@ void help(void)
             " ---------------------------------------------------------------\n" \
             " The following parameters can be passed to this plugin:\n\n" \
             " [-n | --name ]..........: Camera name for ZeroMQ queues\n" \
+            " [-e | --encode ]........: Encode as basae64 \n" \
             " ---------------------------------------------------------------\n");
 }
 
@@ -215,12 +218,15 @@ void *worker_thread(void *args)
 
         DBG("sending frame");
 
-        size_t outputL;
-        char *foo = base64_encode((const unsigned char*)frame, frame_size, &outputL);
-
-        zmq_send (publisher, (void*)foo, outputL, 0);
-        free(foo);        
-
+        if (encode == true) {
+            size_t outputL;
+            char *encoded = base64_encode((const unsigned char*)frame, frame_size, &outputL);
+            zmq_send (publisher, (void*)encoded, outputL, 0);
+            free(encoded);        
+        }
+        else {
+            zmq_send (publisher, (void*)frame, frame_size, 0);
+        }
     }
 
      // close zmq
@@ -258,11 +264,12 @@ int output_init(output_parameter *param)
     while(1) {
         int option_index = 0, c = 0;
         static struct option long_options[] = {
-            {"h", no_argument, 0, 0
-            },
+            {"h", no_argument, 0, 0 },
             {"help", no_argument, 0, 0},
             {"n", required_argument, 0, 0},
             {"name", required_argument, 0, 0},
+            {"e", no_argument, 0, 0},
+            {"encode", no_argument, 0, 0},
             {0, 0, 0, 0}
         };
 
@@ -294,6 +301,11 @@ int output_init(output_parameter *param)
             strcpy(name, optarg);
             if(name[strlen(name)-1] == '/')
                 name[strlen(name)-1] = '\0';
+            break;
+        case 4:
+        case 5:
+            DBG("case 4,5\n");
+            encode = true;
             break;
         }
     }
