@@ -134,8 +134,8 @@ output_viewer.so: mjpg_streamer.h utils.h
 	cp plugins/output_viewer/output_viewer.so .
 
 output_zmq.so: mjpg_streamer.h utils.h
-	make -C plugins/output_zeromq all
-	cp plugins/output_zeromq/output_zmq.so .
+	make -C plugins/output_zmq all
+	cp plugins/output_zmq/output_zmq.so .
 
 
 # cleanup
@@ -150,7 +150,7 @@ clean:
 	make -C plugins/output_viewer $@
 	make -C plugins/input_control $@
 	make -C plugins/output_rtsp $@
-	make -C plugins/output_zeromq $@
+	make -C plugins/output_zmq $@
 #	make -C plugins/input_http $@
 	rm -f *.a *.o $(APP_BINARY) core *~ *.so *.lo
 
