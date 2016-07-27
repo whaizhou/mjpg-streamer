@@ -405,13 +405,9 @@ void *cam_thread(void *arg)
         if(pcontext->videoIn->formatIn == V4L2_PIX_FMT_YUYV) {
             DBG("compressing frame from input: %d\n", (int)pcontext->id);
             pglobal->in[pcontext->id].size = compress_yuyv_to_jpeg(pcontext->videoIn, pglobal->in[pcontext->id].buf, pcontext->videoIn->framesizeIn, gquality);
-            /* copy this frame's timestamp to user space */
-            pglobal->in[pcontext->id].timestamp = pcontext->videoIn->buf.timestamp;
         } else {
             DBG("copying frame from input: %d\n", (int)pcontext->id);
-            pglobal->in[pcontext->id].size = memcpy_picture(pglobal->in[pcontext->id].buf, pcontext->videoIn->tmpbuffer, pcontext->videoIn->tmpbytesused);
-            /* copy this frame's timestamp to user space */
-            pglobal->in[pcontext->id].timestamp = pcontext->videoIn->tmptimestamp;
+            pglobal->in[pcontext->id].size = memcpy_picture(pglobal->in[pcontext->id].buf, pcontext->videoIn->tmpbuffer, pcontext->videoIn->buf.bytesused);
         }
 
 #if 0
@@ -422,6 +418,8 @@ void *cam_thread(void *arg)
         prev_size = global->size;
 #endif
 
+        /* copy this frame's timestamp to user space */
+        pglobal->in[pcontext->id].timestamp = pcontext->videoIn->buf.timestamp;
 
         /* signal fresh_frame */
         pthread_cond_broadcast(&pglobal->in[pcontext->id].db_update);
@@ -534,4 +532,3 @@ int input_cmd(int plugin_number, unsigned int control_id, unsigned int group, in
     }
     return ret;
 }
-
