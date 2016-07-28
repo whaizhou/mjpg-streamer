@@ -2,6 +2,14 @@
 set -x
 set -e
 
+mkdir -p deb
+pushd deb
+wget http://openrov-software-nightlies.s3-us-west-2.amazonaws.com/jessie/zmq/openrov-zmq_1.0.0-1~1_armhf.deb
+dpkg -i openrov-zmq_1.0.0-1~1_armhf.deb
+rm -rf deb
+popd
+
+
 #chmod 644 /etc/resolv.conf
 
 #echo '--------- OLD -----------'
